@@ -12,10 +12,10 @@ function SignUp() {
       </div>
 
       <div className='container'>
-        <div><TextField id='firstname' type='text' variant='filled' label='Enter first name' /></div>
-        <div><TextField id='lastname' type='text' variant='filled' label='Enter last name' /></div>
-        <div><TextField id='email' type='text' variant='filled' label='Enter email' /></div>
-        <div><TextField id='password' type='password' variant='filled' label='Enter password' /></div>
+        <TextField id='firstname' type='text' variant='filled' label='Enter first name' /><br />
+        <TextField id='lastname' type='text' variant='filled' label='Enter last name' /><br />
+        <TextField id='email' type='text' variant='filled' label='Enter email' /><br />
+        <TextField id='password' type='password' variant='filled' label='Enter password' /><br />
         <Button style={{ margin: "1em" }} variant='contained' color='primary'>Create Account</Button>
 
         <div className='divider'>

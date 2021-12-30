@@ -10,14 +10,14 @@ function Login() {
         <div className='text'>Log in</div>
       </div>
 
-      <div><TextField id='email' type='text' variant='filled' label='Enter email' /></div>
-      <div><TextField id='password' type='text' variant='filled' label='Enter password' /></div>
+      <TextField id='email' type='text' variant='filled' label='Enter email' /><br />
+      <TextField id='password' type='text' variant='filled' label='Enter password' /><br />
       <Button style={{ margin: "1em" }} variant='contained' color='primary'>Create Account</Button>
 
       <div className='divider'>
         <Divider />
       </div>
-      <br />
+      
       <p className='mt-2'>
         <Link to='/signup'>
           <h5>Create Account</h5>
