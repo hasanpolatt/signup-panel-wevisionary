@@ -41,7 +41,49 @@ code {
   margin-top: 1em;
 }
 
+.mb-2 {
+  margin-bottom: 3em;
+}
 .divider {
   width: 50%;
   padding-left: 25%;
+}
+
+/* ------ */ 
+
+.navbar {
+  background: black;
+  height: 90px;
+  font-size: 1.2rem;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  margin-left: 20px;
+}
+
+.navbar-logo {
+  color: #fff;
+  text-decoration: none;
+  font-size: 2rem;
+}
+
+.nav-menu {
+  display: flex;
+  grid-gap: 10px;
+  text-align: center;
+  width: 50em;
+  justify-content: end;
+  margin-right: 2rem;
+}
+
+.nav-links {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
 }
