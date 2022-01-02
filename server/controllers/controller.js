@@ -1,4 +1,5 @@
-const pool = require('../queries');
+const pool = require('../database');
+const bcrypt = require("bcrypt");
 
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
@@ -51,9 +52,6 @@ const deleteUser = (request, response) => {
   const id = parseInt(request.params.id)
 
   pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
-
-    // TO DO: check if user is not exist return 404
-
     if (error) {
       response.status(500).json({ "success": false, "message": "Bad Request" })
     }
@@ -71,45 +69,16 @@ const register = async (request, response) => {
         error: "Email already there, No need to register again.",
       });
     }
-    else {
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err)
-          response.status(err).json({
-            error: "Server error",
-          });
-        const user = {
-          username,
-          email,
-          password: hash,
-        };
-        var flag = 1; //Declaring a flag
+    if(!username || !email || !password){
+      return response.status(500).json({"error": "missing field!"})
+    }
 
-        //Inserting data into the database
-
-        pool
-          .query(`INSERT INTO users (username, email, password) VALUES ($1,$2,$3,$4);`, [user.username, user.email, user.password], (err) => {
-
-            if (err) {
-              flag = 0; //If user is not inserted is not inserted to database assigning flag as 0/false.
-              console.error(err);
-              return response.status(500).json({
-                error: "Database error"
-              })
-            }
-            else {
-              flag = 1;
-              response.status(200).send({ message: 'User added to database, not verified' });
-            }
-          })
-        if (flag) {
-          const token = jwt.sign( //Signing a jwt token
-            {
-              email: user.email
-            },
-            process.env.SECRET_KEY
-          );
-        };
-      });
+    const passwordHash = bcrypt.hashSync(password, 10);
+    const insert = await pool.query('INSERT INTO users (name, email, pass) VALUES ($1, $2, $3)', [username, email, passwordHash]);
+    if(insert){
+      return response.status(201).json({"success": "registration success"})
+    }else{
+      return response.status(500).json({"error": "someting gone wrong."})
     }
   }
   catch (err) {
@@ -122,45 +91,20 @@ const register = async (request, response) => {
 
 const login = async (request, response) => {
   const { email, password } = request.body;
+
   try {
-    const data = await pool.query(`SELECT * FROM users WHERE email= $1;`, [email]) //Verifying if the user exists in the database
+    const data = await pool.query(`SELECT * FROM users WHERE email= $1`, [email]) //Verifying if the user exists in the database
     const user = data.rows;
-    if (user.length === 0) {
-      response.status(400).json({
-        error: "User is not registered, Sign Up first",
-      });
-    }
-    else {
-      bcrypt.compare(password, user[0].password, (err, result) => { //Comparing the hashed password
-        if (err) {
-          response.status(500).json({
-            error: "Server error",
-          });
-        } else if (result === true) { //Checking if credentials match
-          const token = jwt.sign(
-            {
-              email: email,
-            },
-            process.env.SECRET_KEY
-          );
-          response.status(200).json({
-            message: "User signed in!",
-            token: token,
-          });
-        }
-        else {
-          //Declaring the errors
-          if (result != true)
-            response.status(400).json({
-              error: "Enter correct password!",
-            });
-        }
-      })
+    const user_ = user[0]
+    if(!user || !bcrypt.compareSync(password, user_.pass)){
+      response.status(200).json({"success": false})
+    }else{
+      response.status(200).json({"success": true})
     }
   } catch (err) {
     console.log(err);
     response.status(500).json({
-      error: "Database error occurred while signing in!", //Database connection error
+      error: "Database error occurred while logging in!", //Database connection error
     });
   };
 };
